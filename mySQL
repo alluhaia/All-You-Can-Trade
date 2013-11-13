@@ -1,0 +1,204 @@
+-- phpMyAdmin SQL Dump
+-- version 3.5.1
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Nov 13, 2013 at 11:55 PM
+-- Server version: 5.5.25
+-- PHP Version: 5.4.4
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `baby`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `category`
+--
+
+CREATE TABLE `category` (
+  `cat_label` varchar(255) NOT NULL,
+  `cat_description` varchar(255) NOT NULL,
+  PRIMARY KEY (`cat_label`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `condition`
+--
+
+CREATE TABLE `condition` (
+  `condition_id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) NOT NULL,
+  PRIMARY KEY (`condition_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `picture`
+--
+
+CREATE TABLE `picture` (
+  `pic_id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` varchar(255) NOT NULL,
+  `pic_label` varchar(255) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  PRIMARY KEY (`pic_id`),
+  KEY `fk_pic` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product`
+--
+
+CREATE TABLE `product` (
+  `product_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `cat_label` varchar(255) NOT NULL,
+  `sub_c_label` varchar(255) NOT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `postdatetime` datetime NOT NULL,
+  `condition_id` int(11) NOT NULL,
+  `availability` varchar(255) NOT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `product_cq` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `side_a_transaction`
+--
+
+CREATE TABLE `side_a_transaction` (
+  `trade_gain_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `trans_datetime` datetime NOT NULL,
+  PRIMARY KEY (`trade_gain_id`),
+  KEY `fk_side_a_transaction_1` (`product_id`),
+  KEY `side_a_transaction_c1` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `side_b_transaction`
+--
+
+CREATE TABLE `side_b_transaction` (
+  `trade_give_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `trans_datetime` datetime NOT NULL,
+  PRIMARY KEY (`trade_give_id`),
+  KEY `fk_side_b_transaction_1` (`product_id`),
+  KEY `side_b_transaction_c1` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `subcategory`
+--
+
+CREATE TABLE `subcategory` (
+  `sub_c_label` varchar(255) NOT NULL,
+  `sub_c_description` varchar(255) NOT NULL,
+  `cat_label` varchar(255) NOT NULL,
+  PRIMARY KEY (`sub_c_label`,`cat_label`),
+  KEY `fk_subcate` (`cat_label`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaction_log`
+--
+
+CREATE TABLE `transaction_log` (
+  `trans_id` int(11) NOT NULL AUTO_INCREMENT,
+  `trade_gain_id` int(11) NOT NULL,
+  `trade_give_id` int(11) NOT NULL,
+  `trans_datetime` datetime NOT NULL,
+  PRIMARY KEY (`trans_id`),
+  KEY `fk_trans_log` (`trade_gain_id`),
+  KEY `fk_trans_log_2` (`trade_give_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `User_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `zipcode` char(5) DEFAULT NULL,
+  `password` char(32) DEFAULT NULL,
+  PRIMARY KEY (`User_ID`),
+  UNIQUE KEY `user_c1` (`email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`User_ID`, `username`, `email`, `zipcode`, `password`) VALUES
+(1, 'Mayada', 'madoo861@gmail.com', '91739', 'oO00121208'),
+(3, 'test', 'test@yahoo.com', '11211', '098f6bcd4621d373cade4e832627b4f6');
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `picture`
+--
+ALTER TABLE `picture`
+  ADD CONSTRAINT `fk_pic` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`);
+
+--
+-- Constraints for table `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `product_cq` FOREIGN KEY (`user_id`) REFERENCES `users` (`User_ID`);
+
+--
+-- Constraints for table `side_a_transaction`
+--
+ALTER TABLE `side_a_transaction`
+  ADD CONSTRAINT `side_a_transaction_c1` FOREIGN KEY (`user_id`) REFERENCES `users` (`User_ID`),
+  ADD CONSTRAINT `fk_side_a_transaction_1` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`);
+
+--
+-- Constraints for table `side_b_transaction`
+--
+ALTER TABLE `side_b_transaction`
+  ADD CONSTRAINT `side_b_transaction_c1` FOREIGN KEY (`user_id`) REFERENCES `users` (`User_ID`),
+  ADD CONSTRAINT `fk_side_b_transaction_1` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`);
+
+--
+-- Constraints for table `subcategory`
+--
+ALTER TABLE `subcategory`
+  ADD CONSTRAINT `fk_subcate` FOREIGN KEY (`cat_label`) REFERENCES `category` (`cat_label`),
+  ADD CONSTRAINT `subcategory_ibfk_1` FOREIGN KEY (`cat_label`) REFERENCES `category` (`cat_label`);
+
+--
+-- Constraints for table `transaction_log`
+--
+ALTER TABLE `transaction_log`
+  ADD CONSTRAINT `fk_trans_log` FOREIGN KEY (`trade_gain_id`) REFERENCES `side_a_transaction` (`trade_gain_id`),
+  ADD CONSTRAINT `fk_trans_log_2` FOREIGN KEY (`trade_give_id`) REFERENCES `side_b_transaction` (`trade_give_id`);
